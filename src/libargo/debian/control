@@ -1,0 +1,13 @@
+Source: libargo
+Section: misc
+Priority: optional
+Maintainer: OpenXT Community <openxt@googlegroups.com>
+Build-Depends: debhelper (>=9), dh-autoreconf
+Standards-Version: 3.9.6
+Vcs-Git: https://github.com/OpenXT/meta-argo-linux.git
+Vcs-Browser: https://github.com/OpenXT/meta-argo-linux
+
+Package: libargo
+Architecture: i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Argo library, interposer and utilities to use Xen Argo protocol.
