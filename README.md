@@ -161,6 +161,25 @@ cp vmlinuz /home/root/vm/vmlinuz
 cp initrd /home/root/vm/initrd
 ```
 
+Patch the init script in the initrd so that it can find `/dev/xvda`
+in the loop just after `echo "Waiting for removable media..."`:
+
+```
+--- init-live.sh    2018-12-03 22:05:47.624593311 -0800
++++ init.xvda   2018-12-03 22:06:11.272593311 -0800
+@@ -137,6 +137,10 @@
+        break   
+       fi
+   done
++
++  ROOT_DISK="/dev/xvda"
++  found="yes"
++
+   if [ "$found" = "yes" ]; then
+       break;
+   fi
+```
+
 Boot it:
 ```
 xl create -c vm1.cfg
