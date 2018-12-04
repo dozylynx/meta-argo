@@ -8,7 +8,7 @@ PV = "git${SRCPV}"
 
 SRC_URI = "git://github.com/dozylynx/meta-argo-linux;branch=rocko"
 #SRCREV = "${AUTOREV}"
-SRCREV = "eed3e2b14a1cf7a1a017d5b86c4768a77aa64986"
+SRCREV = "93a81b59a0ff4378deae15f1557346ebde69cd00"
 SRC_URI[md5sum] = "2c2a94168ceca463f6c60326d881f9be"
 SRC_URI[sha256sum] = "a09fe06ba79eb52a2a11c05d71afdf23a335d6a4c0265c96814669ffc827dcda"
 
