@@ -41,6 +41,21 @@
 #ifndef HYPERVISOR_argo_op
 #define __HYPERVISOR_argo_op               39
 
+/*
+ * Removed because unused in:
+ * https://lkml.org/lkml/2018/8/20/267
+ */
+#define _hypercall5(type, name, a1, a2, a3, a4, a5)			\
+({									\
+	__HYPERCALL_DECLS;						\
+	__HYPERCALL_5ARG(a1, a2, a3, a4, a5);				\
+	asm volatile (__HYPERCALL					\
+		      : __HYPERCALL_5PARAM				\
+		      : __HYPERCALL_ENTRY(name)				\
+		      : __HYPERCALL_CLOBBER5);				\
+	(type)__res;							\
+})
+
 static inline int __must_check
 HYPERVISOR_argo_op(int cmd, void *arg1, void *arg2, uint32_t arg3,
                    uint32_t arg4)
