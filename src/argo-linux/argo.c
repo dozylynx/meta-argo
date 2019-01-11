@@ -3047,14 +3047,34 @@ static const struct dentry_operations argofs_dentry_operations = {
     .d_dname = argofs_dname,
 };
 
+static struct inode *
+argo_make_inode (void)
+{
+    struct inode *inode = new_inode(argo_mnt->mnt_sb);
+
+    if (!inode)
+        return NULL;
+
+    inode->i_ino = get_next_ino();
+    inode->i_fop = argo_mnt->mnt_root->d_inode->i_fop;
+    inode->i_state = argo_mnt->mnt_root->d_inode->i_state;
+    inode->i_mode = argo_mnt->mnt_root->d_inode->i_mode;
+    inode->i_uid = current_fsuid();
+    inode->i_gid = current_fsgid();
+
+    return inode;
+}
+
 static int
 allocate_fd_with_private (void *private)
 {
-    int fd;
+    int fd, rc;
     struct file *f;
+    struct inode *ind;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,19,0))
     struct qstr name = { .name = "" };
     struct path path;
-    struct inode *ind;
+#endif
 
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(3,7,0))
     fd = get_unused_fd();
@@ -3064,37 +3084,41 @@ allocate_fd_with_private (void *private)
     if ( fd < 0 )
         return fd;
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,19,0))
     path.dentry = d_alloc_pseudo(argo_mnt->mnt_sb, &name);
-    if ( unlikely(!path.dentry) )
-    {
-        put_unused_fd(fd);
+    if (unlikely(!path.dentry))
         return -ENOMEM;
-    }
-    ind = new_inode(argo_mnt->mnt_sb);
-    ind->i_ino = get_next_ino();
-    ind->i_fop = argo_mnt->mnt_root->d_inode->i_fop;
-    ind->i_state = argo_mnt->mnt_root->d_inode->i_state;
-    ind->i_mode = argo_mnt->mnt_root->d_inode->i_mode;
-    ind->i_uid = current_fsuid();
-    ind->i_gid = current_fsgid();
-    d_instantiate(path.dentry, ind);
+#endif
 
-    path.mnt = mntget(argo_mnt);
+    ind = argo_make_inode();
+    if (!ind) {
+        rc = -ENOMEM;
+        goto out;
+    }
 
     DEBUG_APPLE;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,19,0))
     f = alloc_file(&path, FMODE_READ | FMODE_WRITE, &argo_fops_stream);
-    if ( !f )
-    {
-      //FIXME putback fd?
-        return -ENFILE;
+#else
+    f = alloc_file_pseudo(ind, argo_mnt, "", O_RDWR, &argo_fops_stream);
+#endif
+    if ( !f ) {
+        rc = -ENFILE;
+        goto out;
     }
-
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,19,0))
+    d_instantiate(path.dentry, ind);
+    path.mnt = mntget(argo_mnt);
+#endif
     f->private_data = private;
-    f->f_flags = O_RDWR;
 
     fd_install (fd, f);
 
     return fd;
+
+out:
+    put_unused_fd(fd);
+    return rc;
 }
 
 static int
