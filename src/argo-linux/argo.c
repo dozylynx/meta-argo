@@ -2611,7 +2611,7 @@ argo_recv_stream(struct argo_private *p, void *_buf, int len, int recv_flags,
 
             ret = copy_to_user(buf, &pending->data[pending->data_ptr], to_copy);
             if ( ret )
-                printk(KERN_ERR "ARGO - copy_to_user failed: buf: %p other: %p to_copy: %u pending %p data_ptr %u data: %p\n",
+                printk(KERN_ERR "ARGO - copy_to_user failed: buf: %p other: %p to_copy: %lu pending %p data_ptr %lu data: %p\n",
                     buf, &pending->data[pending->data_ptr], to_copy, pending,
                     pending->data_ptr, pending->data);
                 /* FIXME: error exit action here? */
@@ -3859,7 +3859,7 @@ argo_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
         }
         break;
         default:
-            printk(KERN_ERR "unknown ioctl: cmd=%x ARGOIOCACCEPT=%x\n", cmd,
+            printk(KERN_ERR "unknown ioctl: cmd=%x ARGOIOCACCEPT=%lx\n", cmd,
                    ARGOIOCACCEPT);
             DEBUG_BANANA;
     }
