@@ -1,10 +1,10 @@
 # meta-argo-linux : Argo's Linux device driver and userspace software
 
-This is a port of the OpenXT v4v Linux device driver and userspace software to exercise the new Argo hypervisor interface.
+This is a port of the OpenXT v4v Linux device driver and userspace software to the Xen Argo hypervisor interface.
 
 OpenEmbedded layer meta and recipes are included in this repository to enable building this software into deployable images.
 
--- Christopher Clark, December 2018.
+-- Christopher Clark, December 2018 (updated January 2019).
 
 ## Build instructions
 
