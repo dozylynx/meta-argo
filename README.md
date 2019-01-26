@@ -125,13 +125,13 @@ MENU TITLE argo-tests
 LABEL argo-tests
     MENU LABEL argo-tests
     KERNEL mboot.c32
-    append argo-tests/xen.gz flask=disabled sync_console argo argo_mac=permissive console=com1,vga dom0_max_vcpus=1 com1=115200,8n1,0x3f8 dom0_mem=max:2G ucode=-1 loglvl=all guest_loglvl=all --- argo-tests/bzImage debug root=/dev/sda1 rw earlyprintk=xen rootwait console=hvc0 --- argo-tests/initrd
+    append argo-tests/xen.gz flask=disabled sync_console argo=1,mac-permissive=1 console=com1,vga dom0_max_vcpus=1 com1=115200,8n1,0x3f8 dom0_mem=max:2G ucode=-1 loglvl=all guest_loglvl=all --- argo-tests/bzImage debug root=/dev/sda1 rw earlyprintk=xen rootwait console=hvc0 --- argo-tests/initrd
 
 MENU END
 
 ```
 
-Note that the important entries are **`argo`** and **`argo_mac=permissive`** on the Xen command line. You want both.
+Note that the important entry is **`argo=1,mac-permissive=1`** on the Xen command line.
 
 ### Install a PV guest
 
