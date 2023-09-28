@@ -4,19 +4,21 @@ This is a port of the OpenXT v4v Linux device driver and userspace software to t
 
 OpenEmbedded layer meta and recipes are included in this repository to enable building this software into deployable images.
 
--- Christopher Clark, December 2018 (updated January 2019).
+-- Christopher Clark, December 2018
+- updated January 2019
+- updated September 2023
 
 ## Build instructions
 
 
 ### Build environment
 
-I recommend use a machine with a version of Debian that OpenEmbedded are happy with. I used 8.2 but there will be others that are OK. Note that OE doesn't seem to like recent versions of Ubuntu, so don't do that -- check your OS is ok before you start with this.
+I recommend using a machine with a linux distribution that OpenEmbedded are happy with. Devuan is close enough.
 
 ### Obtain source material
 
 ```
-export BRANCH="rocko"
+export BRANCH="nanbield"
 
 git clone git://git.yoctoproject.com/poky
 cd poky
