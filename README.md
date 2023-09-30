@@ -1,12 +1,18 @@
-# meta-argo-linux : Argo's Linux device driver and userspace software
+# meta-argo : Layer for Argo interdomain communication software
 
-This is a port of the OpenXT v4v Linux device driver and userspace software to the Xen Argo hypervisor interface.
-
-OpenEmbedded layer meta and recipes are included in this repository to enable building this software into deployable images.
+OpenEmbedded layer meta and recipes to enable building Argo software for deployable images, currently with Xen and Linux.
 
 -- Christopher Clark, December 2018
 - updated January 2019
 - updated September 2023
+
+## References
+
+* https://xenbits.xen.org/docs/4.17-testing/designs/argo.html
+* https://wiki.xenproject.org/wiki/Argo:_Hypervisor-Mediated_Exchange_(HMX)_for_Xen
+* https://openxt.atlassian.net/wiki/spaces/DC/pages/1770422298/HMX+Hypervisor-Mediated+data+eXchange
+* https://static.sched.com/hosted_files/xensummit19/92/Argo%20and%20HMX%20-%20OpenXT%20-%20Christopher%20Clark%20-%20Xen%20Summit%202019.pdf
+* https://www.youtube.com/watch?v=cnC0Tg3jqJQ
 
 ## Build instructions
 
@@ -18,7 +24,7 @@ I recommend using a machine with a linux distribution that OpenEmbedded are happ
 ### Obtain source material
 
 ```
-export BRANCH="nanbield"
+export BRANCH="mickledore"
 
 git clone git://git.yoctoproject.com/poky
 cd poky
@@ -70,7 +76,7 @@ Building for x86-64. *ARM can be done, but requires additional configuration out
 ```
 MACHINE = "genericx86-64"
 
-DISTRO_FEATURES_append = " virtualization xen"
+DISTRO_FEATURES:append = " virtualization xen"
 ```
 
 These speed up the build; choose numbers appropriate for your hardware.
