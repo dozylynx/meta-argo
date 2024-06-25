@@ -2,9 +2,8 @@
 
 OpenEmbedded layer meta and recipes to enable building Argo software for deployable images, currently with Xen and Linux.
 
--- Christopher Clark, December 2018
-- updated January 2019
-- updated September 2023
+-- Christopher Clark
+- updated June 2024
 
 ## References
 
@@ -16,15 +15,14 @@ OpenEmbedded layer meta and recipes to enable building Argo software for deploya
 
 ## Build instructions
 
-
 ### Build environment
 
-I recommend using a machine with a linux distribution that OpenEmbedded are happy with. Devuan is close enough.
+I recommend using a machine with a linux distribution that OpenEmbedded are happy with. [Devuan](https://devuan.org) is currently close enough and is used in development.
 
-### Obtain source material
+### Obtain the sources
 
 ```
-export BRANCH="mickledore"
+export BRANCH="scarthgap"
 
 git clone git://git.yoctoproject.com/poky
 cd poky
@@ -36,8 +34,8 @@ cd meta-openembedded ; git checkout "${BRANCH}" ; cd -
 git clone git://git.yoctoproject.org/meta-virtualization
 cd meta-virtualization ; git checkout "${BRANCH}" ; cd -
 
-git clone https://github.com/dozylynx/meta-argo-linux
-cd meta-argo-linux ; git checkout "${BRANCH}" ; cd -
+git clone https://github.com/dozylynx/meta-argo
+cd meta-argo ; git checkout "${BRANCH}" ; cd -
 ```
 
 ### Prepare build configuration
@@ -47,7 +45,8 @@ source ./oe-init-build-env
 
 #### Configure bblayers.conf
 
-Locate `conf/bblayers.conf`, and edit the file contents:
+Locate `conf/bblayers.conf`, and edit the file contents - update `{YOUR FILESYSTEM PATH HERE}` for your development environment:
+
 ```
 # POKY_BBLAYERS_CONF_VERSION is increased each time build/conf/bblayers.conf
 # changes incompatibly
@@ -65,7 +64,7 @@ BBLAYERS ?= " \
   {YOUR FILESYSTEM PATH HERE}/poky/meta-openembedded/meta-networking \
   {YOUR FILESYSTEM PATH HERE}/poky/meta-openembedded/meta-python \
   {YOUR FILESYSTEM PATH HERE}/poky/meta-virtualization \
-  {YOUR FILESYSTEM PATH HERE}/poky/meta-argo-linux \
+  {YOUR FILESYSTEM PATH HERE}/poky/meta-argo \
   "
 ```
 
@@ -73,18 +72,38 @@ BBLAYERS ?= " \
 
 Building for x86-64. *ARM can be done, but requires additional configuration outside the scope of this guide*.
 
-```
-MACHINE = "genericx86-64"
+Enable Xen inclusion in your local.conf:
 
+```
 DISTRO_FEATURES:append = " virtualization xen"
 ```
 
-These speed up the build; choose numbers appropriate for your hardware.
+To build for deployment onto generic x86-64 hardware, add:
+
+```
+MACHINE = "genericx86-64"
+
+```
+
+Note that the `pcengines-apu2` from the [`meta-pcengines`](https://github.com/pcengines/meta-pcengines) layer is also a valid `MACHINE`, if you have updated that layer for current branch compatibility.
+
+Alternatively, to build for testing in qemu, add this:
+
+```
+MACHINE = "qemux86-64"
+```
+
+These settings can accelerate the build; choose numbers that are appropriate for your hardware.
 
 ```
 BB_NUMBER_THREADS ?= "4"
 PARALLEL_MAKE ?= "-j 2"
+
 ```
+
+Docs for these settings:
+- [BB_NUMBER_THREADS](https://docs.yoctoproject.org/ref-manual/variables.html#term-BB_NUMBER_THREADS)
+- [PARALLEL_MAKE](https://docs.yoctoproject.org/ref-manual/variables.html#term-PARALLEL_MAKE)
 
 *Optional: reminder: set up the download mirror if you have one and know how to do it*
 
@@ -92,14 +111,33 @@ PARALLEL_MAKE ?= "-j 2"
 ### Build
 
 ```
-# Building images to deploy to a test machine:
+# Building both the host and guest images to deploy to a test machine:
 bitbake xen-image-minimal xen-guest-image-minimal
 
 # Just building the components:
 bitbake argo-linux-module libargo
 ```
 
-### Deploy
+### Run the Xen host image in Qemu
+
+If you have built an image with `MACHINE` set to `qemux86-64`, then you can
+boot it at the command line with:
+
+```
+runqemu xen-image-minimal nographic slirp
+```
+
+This will launch the image and you can log in and configure guests for testing
+as needed.
+
+Note that the plumbing of the hypervisor command line option to enable Argo is
+performed by the meta-argo wic configuration file
+`qemuboot-xen-argo-x86-64.cfg`.
+
+### Deploy to Hardware Instructions
+
+These steps were written without using the Xen image support for building system
+images with wic, so include manual steps for configuring host disk partitions.
 
 #### Install dom0
 Steps:
